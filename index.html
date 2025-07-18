@@ -1,706 +1,1187 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Sales and Expense Tracker</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom styles for better aesthetics */
-        body {
-            font-family: "Inter", sans-serif;
-            background-color: #f0f4f8; /* Light blue-gray background */
-            color: #2d3748;
-        }
-        .container {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            max-width: 1200px;
-            width: 100%;
-            margin: 20px;
-        }
-        h1, h2 {
-            color: #1a202c;
-        }
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 10px;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        th {
-            background-color: #edf2f7;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.9em;
-        }
-        tr:last-child td {
-            border-bottom: none;
-        }
-        .total-row {
-            background-color: #e0f2fe;
-            font-weight: 700;
-        }
-        .rounded-tl { border-top-left-radius: 10px; }
-        .rounded-tr { border-top-right-radius: 10px; }
-        .rounded-bl { border-bottom-left-radius: 10px; }
-        .rounded-br { border-bottom-right-radius: 10px; }
-        .form-group input, .form-group select {
-            background-color: #ffffff;
-            border: 1px solid #cbd5e0;
-            color: #2d3748;
-            padding: 10px;
-            border-radius: 8px;
-            width: 100%;
-        }
-        .btn-primary {
-            background-color: #4299e1;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        .btn-primary:hover {
-            background-color: #3182ce;
-            transform: translateY(-2px);
-        }
-        .btn-edit, .btn-delete {
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: background-color 0.3s ease;
-        }
-        .btn-edit {
-            background-color: #f0ad4e;
-            color: white;
-        }
-        .btn-edit:hover {
-            background-color: #ec971f;
-        }
-        .btn-delete {
-            background-color: #d9534f;
-            color: white;
-        }
-        .btn-delete:hover {
-            background-color: #c9302c;
-        }
-        .message-box {
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: none;
-            font-weight: 500;
-        }
-        .message-box.show {
-            display: block;
-        }
-        .settlement-item .amount.positive {
-            color: #10b981;
-        }
-        .settlement-item .amount.negative {
-            color: #ef4444;
-        }
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            position: relative;
-        }
-        .modal-overlay.show {
-            display: flex;
-        }
-        .close-button {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-    </style>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Product Sales and Expense Tracker</title>
+
+    <!-- Tailwind CSS CDN -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+
+        /* Custom styles for better aesthetics */
+
+        body {
+
+            font-family: "Inter", sans-serif;
+
+            background-color: #f0f4f8; /* Light blue-gray background */
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            min-height: 100vh;
+
+            padding: 20px;
+
+            box-sizing: border-box;
+
+        }
+
+        .container {
+
+            background-color: #ffffff;
+
+            padding: 30px;
+
+            border-radius: 15px;
+
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+
+            max-width: 1000px; /* Increased max-width for better layout */
+
+            width: 100%;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 20px;
+
+            color: #2d3748; /* Default text color for inside containers */
+
+        }
+
+        h1, h2 {
+
+            color: #2d3748; /* Darker headings */
+
+            text-shadow: none; /* Remove text shadow */
+
+        }
+
+        p, label, span {
+
+            color: #4a5568; /* Default text color for labels and paragraphs */
+
+        }
+
+        .container > p { /* Specific styling for the User ID paragraph */
+
+            color: #6b7280; /* Slightly darker gray for user ID */
+
+        }
+
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: separate;
+
+            border-spacing: 0 10px; /* Space between rows */
+
+            background-color: #ffffff; /* Solid white background for table */
+
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Lighter shadow */
+
+            border-radius: 15px;
+
+            overflow: hidden; /* Ensures rounded corners apply to content */
+
+        }
+
+        th, td {
+
+            padding: 12px 15px;
+
+            text-align: left;
+
+            border-bottom: 1px solid #e2e8f0; /* Light gray border */
+
+            color: #2d3748; /* Darker text for table content */
+
+        }
+
+        th {
+
+            background-color: #edf2f7; /* Lighter blue-gray for header */
+
+            font-weight: 600;
+
+            color: #2d3748;
+
+            text-transform: uppercase;
+
+            font-size: 0.9em;
+
+        }
+
+        tr:last-child td {
+
+            border-bottom: none;
+
+        }
+
+        .total-row {
+
+            background-color: #e0f2fe; /* Light blue for total row */
+
+            font-weight: 700;
+
+            color: #1a202c;
+
+        }
+
+        .rounded-tl { border-top-left-radius: 10px; }
+
+        .rounded-tr { border-top-right-radius: 10px; }
+
+        .rounded-bl { border-bottom-left-radius: 10px; }
+
+        .rounded-br { border-bottom-right-radius: 10px; }
+
+        .rounded-t-lg { border-top-left-radius: 15px; border-top-right-radius: 15px; }
+
+        .rounded-b-lg { border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; }
+
+
+
+        /* Original styles for inner sections */
+
+        .bg-gray-50 { background-color: #f9fafb; }
+
+        .bg-yellow-50 { background-color: #fffbeb; }
+
+        .bg-blue-50 { background-color: #eff6ff; }
+
+        .bg-green-50 { background-color: #ecfdf5; }
+
+        .bg-purple-50 { background-color: #f5f3ff; }
+
+
+
+        .p-6 { padding: 24px; } /* Consistent padding */
+
+        .rounded-lg { border-radius: 12px; } /* Consistent border-radius */
+
+        .shadow-inner { box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); } /* Keep subtle inner shadow */
+
+
+
+        .form-group label {
+
+            color: #4a5568; /* Darker text for form labels */
+
+        }
+
+        .form-group input, .form-group select {
+
+            background-color: #ffffff; /* Input background */
+
+            border: 1px solid #cbd5e0;
+
+            color: #2d3748; /* Input text color */
+
+            padding: 10px;
+
+            border-radius: 8px;
+
+        }
+
+        .form-group input::placeholder {
+
+            color: #a0aec0; /* Darker placeholder text */
+
+        }
+
+        .form-group input:focus, .form-group select:focus {
+
+            outline: none;
+
+            border-color: #4299e1;
+
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+
+        }
+
+        .btn-primary {
+
+            background-color: #4299e1;
+
+            color: white;
+
+            padding: 12px 20px;
+
+            border-radius: 8px;
+
+            border: none;
+
+            cursor: pointer;
+
+            font-size: 1.1em;
+
+            font-weight: 600;
+
+            transition: background-color 0.3s ease, transform 0.2s ease;
+
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Lighter button shadow */
+
+        }
+
+        .btn-primary:hover {
+
+            background-color: #3182ce;
+
+            transform: translateY(-2px);
+
+        }
+
+        .message-box {
+
+            background-color: #fff3cd;
+
+            border: 1px solid #ffeeba;
+
+            color: #856404;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            margin-top: 20px;
+
+            display: none;
+
+            font-weight: 500;
+
+            backdrop-filter: none; /* Remove backdrop filter */
+
+        }
+
+        .message-box.show {
+
+            display: block;
+
+        }
+
+        /* Restore original message box colors */
+
+        .message-box[style*="background-color: rgb(248, 215, 218)"] { /* error */
+
+            background-color: #f8d7da;
+
+            border-color: #f5c6cb;
+
+            color: #721c24;
+
+        }
+
+        .message-box[style*="background-color: rgb(212, 237, 218)"] { /* success */
+
+            background-color: #d4edda;
+
+            border-color: #c3e6cb;
+
+            color: #155724;
+
+        }
+
+        .message-box[style*="background-color: rgb(207, 226, 255)"] { /* info */
+
+            background-color: #cfe2ff;
+
+            border-color: #b6d4fe;
+
+            color: #052c65;
+
+        }
+
+
+
+        .settlement-item {
+
+            color: #4a5568; /* Darker text for settlement items */
+
+            border-bottom: 1px dashed #e2e8f0; /* Restore original border */
+
+        }
+
+        .settlement-item .amount.positive {
+
+            color: #10b981; /* Original green */
+
+        }
+
+        .settlement-item .amount.negative {
+
+            color: #ef4444; /* Original red */
+
+        }
+
+        .form-radio {
+
+            accent-color: #4299e1; /* Keep custom color for radio buttons */
+
+        }
+
+    </style>
+
 </head>
-<body class="flex justify-center items-start p-4 md:p-8">
-    <div class="container">
-        <h1 class="text-3xl font-bold text-center mb-4">Product Sales and Expense Tracker</h1>
-        <p class="text-center mb-6">User ID: <span id="userIdDisplay" class="font-mono text-sm bg-gray-100 px-2 py-1 rounded-md text-gray-800">Loading...</span></p>
 
-        <!-- Input Form -->
-        <div class="bg-gray-50 p-6 rounded-lg shadow-inner mb-6">
-            <h2 class="text-2xl font-semibold mb-5">Add New Expense</h2>
-            <form id="expenseForm">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div class="form-group">
-                        <label for="name" class="block mb-1">Name:</label>
-                        <select id="name"></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="item" class="block mb-1">Item:</label>
-                        <input type="text" id="item" placeholder="e.g., Potato" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="quantity" class="block mb-1">Quantity (e.g., 2.5):</label>
-                        <input type="number" id="quantity" min="0.01" step="0.01" placeholder="e.g., 2.5" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="totalPrice" class="block mb-1">Total Price for Item (₹):</label>
-                        <input type="number" id="totalPrice" min="0.01" step="0.01" placeholder="e.g., 120" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="date" class="block mb-1">Date:</label>
-                        <input type="date" id="date" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn-primary w-full mt-6">Add Expense</button>
-            </form>
-            <div id="messageBox" class="message-box"></div>
-        </div>
+<body>
 
-        <!-- Date Range Filter -->
-        <div class="bg-yellow-50 p-6 rounded-lg shadow-inner mb-6">
-            <h2 class="text-2xl font-semibold mb-4">Filter Expenses by Date</h2>
-            <div class="flex flex-wrap gap-4">
-                <label class="inline-flex items-center"><input type="radio" name="dateFilter" value="all" checked class="form-radio h-5 w-5" onchange="filterExpenses()"><span class="ml-2">All Time</span></label>
-                <label class="inline-flex items-center"><input type="radio" name="dateFilter" value="15" class="form-radio h-5 w-5" onchange="filterExpenses()"><span class="ml-2">Last 15 Days</span></label>
-                <label class="inline-flex items-center"><input type="radio" name="dateFilter" value="30" class="form-radio h-5 w-5" onchange="filterExpenses()"><span class="ml-2">Last 30 Days</span></label>
-            </div>
-        </div>
+    <div class="container">
 
-        <!-- Sales Table -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
-                <thead>
-                    <tr>
-                        <th class="py-3 px-4 rounded-tl">Name</th>
-                        <th class="py-3 px-4">Item</th>
-                        <th class="py-3 px-4">Qty</th>
-                        <th class="py-3 px-4">Price/Unit (₹)</th>
-                        <th class="py-3 px-4">Date</th>
-                        <th class="py-3 px-4">Total (₹)</th>
-                        <th class="py-3 px-4 rounded-tr">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="salesTableBody">
-                    <tr><td colspan="7" class="text-center py-4 text-gray-500">Loading expenses...</td></tr>
-                </tbody>
-                <tfoot>
-                    <tr class="total-row">
-                        <td colspan="6" class="py-3 px-4 text-right font-bold rounded-bl">Grand Total Expenses:</td>
-                        <td id="grandTotal" class="py-3 px-4 font-bold">0.00</td>
-                        <td class="rounded-br"></td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
+        <h1 class="text-3xl font-bold text-center mb-4">Product Sales and Expense Tracker</h1>
 
-        <!-- Summaries -->
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-            <div class="bg-blue-50 p-6 rounded-lg shadow-inner">
-                <h2 class="text-2xl font-semibold mb-4">Expense Summary</h2>
-                <p class="text-lg mb-2">Total Expenses: <span id="totalExpensesSummary" class="font-bold text-xl">0.00</span> ₹</p>
-                <p class="text-lg">Amount per Person: <span id="amountPerPerson" class="font-bold text-xl">0.00</span> ₹</p>
-            </div>
-            <div class="bg-green-50 p-6 rounded-lg shadow-inner">
-                <h2 class="text-2xl font-semibold mb-4">Individual Contributions</h2>
-                <ul id="individualExpensesList" class="list-disc list-inside text-lg space-y-1">
-                    <!-- Populated by JS -->
-                </ul>
-            </div>
-            <div class="bg-purple-50 p-6 rounded-lg shadow-inner md:col-span-2 lg:col-span-1">
-                <h2 class="text-2xl font-semibold mb-4">Who Owes Whom?</h2>
-                <div id="settlementDetails" class="space-y-2">
-                    <p class="text-gray-600">Calculations will appear here.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Modal -->
-    <div id="editModal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="close-button" onclick="closeModal('editModal')">&times;</button>
-            <h2 class="text-2xl font-semibold mb-5">Edit Expense</h2>
-            <form id="editExpenseForm">
-                <input type="hidden" id="editExpenseId">
-                <div class="grid grid-cols-1 gap-4">
-                    <div class="form-group">
-                        <label for="editName" class="block mb-1">Name:</label>
-                        <select id="editName"></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="editItem" class="block mb-1">Item:</label>
-                        <input type="text" id="editItem" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editQuantity" class="block mb-1">Quantity:</label>
-                        <input type="number" id="editQuantity" min="0.01" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editTotalPrice" class="block mb-1">Total Price for Item (₹):</label>
-                        <input type="number" id="editTotalPrice" min="0.01" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editDate" class="block mb-1">Date:</label>
-                        <input type="date" id="editDate" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn-primary w-full mt-6">Update Expense</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Confirm Delete Modal -->
-    <div id="confirmModal" class="modal-overlay">
-        <div class="modal-content text-center">
-            <h2 class="text-xl font-semibold mb-4">Are you sure?</h2>
-            <p class="mb-6">Do you really want to delete this expense? This action cannot be undone.</p>
-            <div class="flex justify-center gap-4">
-                <button id="confirmDeleteBtn" class="btn-delete px-6 py-2">Delete</button>
-                <button onclick="closeModal('confirmModal')" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold px-6 py-2 rounded">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        // Firebase imports
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global variables from Canvas environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        // Firebase variables
-        let app, db, auth, currentUserId = null;
-        let allSalesData = []; // Store all fetched data for client-side filtering
-
-        // DOM Elements
-        const salesTableBody = document.getElementById('salesTableBody');
-        const grandTotalElement = document.getElementById('grandTotal');
-        const totalExpensesSummaryElement = document.getElementById('totalExpensesSummary');
-        const amountPerPersonElement = document.getElementById('amountPerPerson');
-        const expenseForm = document.getElementById('expenseForm');
-        const nameInput = document.getElementById('name');
-        const itemInput = document.getElementById('item');
-        const quantityInput = document.getElementById('quantity');
-        const totalPriceInput = document.getElementById('totalPrice');
-        const dateInput = document.getElementById('date');
-        const userIdDisplay = document.getElementById('userIdDisplay');
-        const messageBox = document.getElementById('messageBox');
-        const settlementDetailsElement = document.getElementById('settlementDetails');
-        const individualExpensesList = document.getElementById('individualExpensesList');
-
-        // Edit Modal DOM Elements
-        const editModal = document.getElementById('editModal');
-        const editExpenseForm = document.getElementById('editExpenseForm');
-        const editExpenseId = document.getElementById('editExpenseId');
-        const editName = document.getElementById('editName');
-        const editItem = document.getElementById('editItem');
-        const editQuantity = document.getElementById('editQuantity');
-        const editTotalPrice = document.getElementById('editTotalPrice');
-        const editDate = document.getElementById('editDate');
-
-        // Confirm Modal DOM Elements
-        const confirmModal = document.getElementById('confirmModal');
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-        let expenseToDeleteId = null;
-
-        // --- Core Application Logic ---
-
-        // Updated list of names
-        const fixedNames = ["Rambachan", "Ramesh", "Bikash", "Rajkishor", "Raju"];
-        const numberOfPeople = fixedNames.length;
-
-        /**
-         * Populates select dropdowns with names.
-         */
-        function populateNameDropdowns() {
-            const dropdowns = [nameInput, editName];
-            dropdowns.forEach(dropdown => {
-                dropdown.innerHTML = fixedNames.map(name => `<option value="${name}">${name}</option>`).join('');
-            });
-        }
-        
-        /**
-         * Populates the individual expense list in the summary section.
-         */
-        function populateIndividualExpenseList() {
-            individualExpensesList.innerHTML = fixedNames.map(name => 
-                `<li>${name}: <span id="${name.toLowerCase()}Expenses" class="font-bold">0.00</span> ₹</li>`
-            ).join('');
-        }
-
-        /**
-         * Displays a message in the message box.
-         * @param {string} message - The message to display.
-         * @param {string} type - 'success', 'error', or 'info'.
-         */
-        function showMessage(message, type = 'info') {
-            messageBox.textContent = message;
-            messageBox.className = 'message-box show';
-            if (type === 'error') {
-                messageBox.style.backgroundColor = '#f8d7da';
-                messageBox.style.borderColor = '#f5c6cb';
-                messageBox.style.color = '#721c24';
-            } else if (type === 'success') {
-                messageBox.style.backgroundColor = '#d4edda';
-                messageBox.style.borderColor = '#c3e6cb';
-                messageBox.style.color = '#155724';
-            } else {
-                messageBox.style.backgroundColor = '#cfe2ff';
-                messageBox.style.borderColor = '#b6d4fe';
-                messageBox.style.color = '#052c65';
-            }
-            setTimeout(() => { messageBox.classList.remove('show'); }, 5000);
-        }
-
-        /**
-         * Initializes Firebase and sets up authentication.
-         */
-        async function initializeFirebase() {
-            try {
-                if (Object.keys(firebaseConfig).length === 0) {
-                    throw new Error("Firebase configuration is missing or empty.");
-                }
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                // 1. Set up the listener to react to auth state changes.
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        // User is signed in.
-                        currentUserId = user.uid;
-                        userIdDisplay.textContent = currentUserId;
-                        userIdDisplay.classList.remove('text-red-500');
-                        console.log("User authenticated with UID:", currentUserId);
-                        setupRealtimeListener();
-                    } else {
-                        // User is signed out.
-                        currentUserId = null;
-                        userIdDisplay.textContent = "Not Signed In";
-                        console.log("User is signed out.");
-                        populateTable([]); 
-                    }
-                });
-
-                // 2. Attempt to sign in. The listener above will handle the result.
-                try {
-                    if (!auth.currentUser) {
-                         if (initialAuthToken) {
-                            console.log("Attempting sign in with custom token...");
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } else {
-                            console.log("Attempting anonymous sign in...");
-                            await signInAnonymously(auth);
-                        }
-                    }
-                } catch (error) {
-                    console.error("Authentication error during sign-in attempt:", error);
-                    showMessage("Authentication failed. The app may not work correctly.", 'error');
-                    userIdDisplay.textContent = "Auth Failed";
-                    userIdDisplay.classList.add('text-red-500');
-                }
-
-            } catch (error) {
-                console.error("Firebase initialization error:", error);
-                showMessage("Failed to initialize the application. Check Firebase config.", 'error');
-                userIdDisplay.textContent = "Init Failed";
-                userIdDisplay.classList.add('text-red-500');
-            }
-        }
-
-        /**
-         * Sets up a real-time listener for sales data from Firestore.
-         */
-        function setupRealtimeListener() {
-            if (!db || !currentUserId) {
-                console.warn("Firestore or User ID not ready for listener setup.");
-                return;
-            };
-            const salesCollectionRef = collection(db, `artifacts/${appId}/public/data/sales`);
-            const q = query(salesCollectionRef);
-
-            onSnapshot(q, (snapshot) => {
-                allSalesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                filterExpenses(); // Re-filter and populate table
-            }, (error) => {
-                console.error("Error fetching real-time data:", error);
-                showMessage("Error loading sales data.", 'error');
-            });
-        }
-
-        /**
-         * Filters expenses based on the selected date range and then populates the table.
-         */
-        window.filterExpenses = function() {
-            const selectedFilter = document.querySelector('input[name="dateFilter"]:checked').value;
-            let filteredData = [...allSalesData];
-
-            if (selectedFilter !== 'all') {
-                const days = parseInt(selectedFilter);
-                const cutoffDate = new Date();
-                cutoffDate.setDate(cutoffDate.getDate() - days);
-                cutoffDate.setHours(0, 0, 0, 0);
-                filteredData = filteredData.filter(sale => new Date(sale.date) >= cutoffDate);
-            }
-            populateTable(filteredData);
-        }
-
-        /**
-         * Populates the table and summary sections with data.
-         * @param {Array<Object>} data - The array of sales data to display.
-         */
-        function populateTable(data) {
-            salesTableBody.innerHTML = '';
-            let totalExpenses = 0;
-            let expensesPerPerson = fixedNames.reduce((acc, name) => ({ ...acc, [name]: 0 }), {});
-
-            if (data.length === 0) {
-                salesTableBody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-gray-500">No expenses found for this period.</td></tr>';
-            } else {
-                data.sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by most recent date
-                data.forEach(sale => {
-                    const itemTotalPrice = sale.quantity * sale.price;
-                    totalExpenses += itemTotalPrice;
-                    if (expensesPerPerson.hasOwnProperty(sale.name)) {
-                        expensesPerPerson[sale.name] += itemTotalPrice;
-                    }
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${sale.name}</td>
-                        <td>${sale.item}</td>
-                        <td>${sale.quantity}</td>
-                        <td>${sale.price.toFixed(2)}</td>
-                        <td>${sale.date}</td>
-                        <td>${itemTotalPrice.toFixed(2)}</td>
-                        <td class="space-x-2">
-                            <button class="btn-edit edit-btn" data-id="${sale.id}">Edit</button>
-                            <button class="btn-delete delete-btn" data-id="${sale.id}">Delete</button>
-                        </td>
-                    `;
-                    salesTableBody.appendChild(row);
-                });
-            }
-
-            // Update totals and summaries
-            grandTotalElement.textContent = totalExpenses.toFixed(2);
-            totalExpensesSummaryElement.textContent = totalExpenses.toFixed(2);
-            const amountPerPerson = totalExpenses > 0 ? totalExpenses / numberOfPeople : 0;
-            amountPerPersonElement.textContent = amountPerPerson.toFixed(2);
-
-            // Update individual expense contributions
-            fixedNames.forEach(name => {
-                const el = document.getElementById(`${name.toLowerCase()}Expenses`);
-                if(el) el.textContent = expensesPerPerson[name].toFixed(2);
-            });
-
-            calculateSettlement(expensesPerPerson, amountPerPerson);
-        }
-        
-        /**
-         * Calculates and displays who owes whom.
-         * @param {Object} expensesPerPerson - Total expenses for each person.
-         * @param {number} amountPerPerson - Average amount per person.
-         */
-        function calculateSettlement(expensesPerPerson, amountPerPerson) {
-            settlementDetailsElement.innerHTML = '';
-            if (amountPerPerson === 0) {
-                settlementDetailsElement.innerHTML = '<p class="text-gray-600">No expenses to settle.</p>';
-                return;
-            }
-
-            fixedNames.forEach(name => {
-                const balance = expensesPerPerson[name] - amountPerPerson;
-                const item = document.createElement('div');
-                item.className = 'settlement-item flex justify-between items-center';
-                let content;
-                if (balance < -0.005) { // Use a small tolerance for floating point issues
-                    content = `<span>${name} owes:</span> <span class="font-bold amount negative">₹ ${Math.abs(balance).toFixed(2)}</span>`;
-                } else if (balance > 0.005) {
-                    content = `<span>${name} is owed:</span> <span class="font-bold amount positive">₹ ${balance.toFixed(2)}</span>`;
-                } else {
-                    content = `<span>${name} is settled:</span> <span class="font-bold">₹ 0.00</span>`;
-                }
-                item.innerHTML = content;
-                settlementDetailsElement.appendChild(item);
-            });
-        }
+        <p class="text-center mb-6">User ID: <span id="userIdDisplay" class="font-mono text-sm bg-gray-100 px-2 py-1 rounded-md text-gray-800">Loading...</span></p>
 
 
-        // --- CRUD Operations ---
 
-        /**
-         * Handles form submission to add a new expense.
-         */
-        async function addExpense(event) {
-            event.preventDefault();
-            const quantity = parseFloat(quantityInput.value);
-            const totalPrice = parseFloat(totalPriceInput.value);
+        <!-- Input Form -->
 
-            if (!itemInput.value.trim() || isNaN(quantity) || quantity <= 0 || isNaN(totalPrice) || totalPrice <= 0 || !dateInput.value) {
-                showMessage("Please fill all fields correctly. Quantity and Total Price must be positive numbers.", 'error');
-                return;
-            }
+        <div class="bg-gray-50 p-6 rounded-lg shadow-inner mb-6">
 
-            const pricePerUnit = totalPrice / quantity;
+            <h2 class="text-2xl font-semibold mb-5">Add New Expense</h2>
 
-            const newExpense = {
-                name: nameInput.value,
-                item: itemInput.value.trim(),
-                quantity: quantity,
-                price: pricePerUnit, // Storing calculated price per unit
-                date: dateInput.value,
-                timestamp: new Date().toISOString()
-            };
+            <form id="expenseForm">
 
-            try {
-                await addDoc(collection(db, `artifacts/${appId}/public/data/sales`), newExpense);
-                showMessage("Expense added successfully!", 'success');
-                expenseForm.reset();
-                dateInput.value = new Date().toISOString().slice(0, 10);
-            } catch (e) {
-                console.error("Error adding document: ", e);
-                showMessage("Error adding expense. Please try again.", 'error');
-            }
-        }
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        /**
-         * Handles the update of an existing expense.
-         */
-        async function updateExpense(event) {
-            event.preventDefault();
-            const id = editExpenseId.value;
-            const quantity = parseFloat(editQuantity.value);
-            const totalPrice = parseFloat(editTotalPrice.value);
+                    <div class="form-group">
 
-            if (!editItem.value.trim() || isNaN(quantity) || quantity <= 0 || isNaN(totalPrice) || totalPrice <= 0 || !editDate.value) {
-                showMessage("Please fill all fields correctly in the edit form.", 'error');
-                return;
-            }
-            
-            const pricePerUnit = totalPrice / quantity;
+                        <label for="name">Name:</label>
 
-            const updatedExpense = {
-                name: editName.value,
-                item: editItem.value.trim(),
-                quantity: quantity,
-                price: pricePerUnit, // Storing re-calculated price per unit
-                date: editDate.value,
-            };
+                        <select id="name" class="rounded-md">
 
-            try {
-                const docRef = doc(db, `artifacts/${appId}/public/data/sales`, id);
-                await updateDoc(docRef, updatedExpense);
-                showMessage("Expense updated successfully!", 'success');
-                closeModal('editModal');
-            } catch (e) {
-                console.error("Error updating document: ", e);
-                showMessage("Error updating expense. Please try again.", 'error');
-            }
-        }
+                            <option value="Ram">Ram</option>
 
-        /**
-         * Handles the deletion of an expense.
-         */
-        async function deleteExpense() {
-            if (!expenseToDeleteId) return;
-            try {
-                await deleteDoc(doc(db, `artifacts/${appId}/public/data/sales`, expenseToDeleteId));
-                showMessage("Expense deleted successfully!", 'success');
-            } catch (e) {
-                console.error("Error deleting document: ", e);
-                showMessage("Error deleting expense. Please try again.", 'error');
-            } finally {
-                closeModal('confirmModal');
-                expenseToDeleteId = null;
-            }
-        }
+                            <option value="Shyam">Shyam</option>
 
-        // --- Modal Handling ---
-        
-        window.openModal = function(modalId) {
-            document.getElementById(modalId).classList.add('show');
-        }
+                            <option value="Rahul">Rahul</option>
 
-        window.closeModal = function(modalId) {
-            document.getElementById(modalId).classList.remove('show');
-        }
+                            <option value="Sita">Sita</option>
 
-        function openEditModal(id) {
-            const expense = allSalesData.find(sale => sale.id === id);
-            if (expense) {
-                editExpenseId.value = id;
-                editName.value = expense.name;
-                editItem.value = expense.item;
-                editQuantity.value = expense.quantity;
-                editDate.value = expense.date;
-                // Calculate and populate the total price for the edit form
-                const totalPrice = expense.quantity * expense.price;
-                editTotalPrice.value = totalPrice.toFixed(2);
-                openModal('editModal');
-            }
-        }
-        
-        function openConfirmModal(id) {
-            expenseToDeleteId = id;
-            openModal('confirmModal');
-        }
+                        </select>
 
-        // --- Event Listeners ---
+                    </div>
 
-        expenseForm.addEventListener('submit', addExpense);
-        editExpenseForm.addEventListener('submit', updateExpense);
-        confirmDeleteBtn.addEventListener('click', deleteExpense);
+                    <div class="form-group">
 
-        // Event delegation for edit/delete buttons
-        salesTableBody.addEventListener('click', (event) => {
-            const target = event.target;
-            if (target.classList.contains('edit-btn')) {
-                openEditModal(target.dataset.id);
-            } else if (target.classList.contains('delete-btn')) {
-                openConfirmModal(target.dataset.id);
-            }
-        });
+                        <label for="item">Item:</label>
 
-        // --- Initial Setup ---
-        
-        window.onload = () => {
-            populateNameDropdowns();
-            populateIndividualExpenseList();
-            dateInput.value = new Date().toISOString().slice(0, 10);
-            initializeFirebase();
-        };
+                        <input type="text" id="item" placeholder="e.g., Apple" required class="rounded-md">
 
-    </script>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="quantity">Quantity:</label>
+
+                        <input type="number" id="quantity" min="0" step="0.01" value="1" required class="rounded-md">
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="price">Price per Unit (₹):</label>
+
+                        <input type="number" id="price" min="0.01" step="0.01" required class="rounded-md">
+
+                    </div>
+
+                    <div class="form-group md:col-span-2">
+
+                        <label for="date">Date:</label>
+
+                        <input type="date" id="date" required class="rounded-md">
+
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn-primary w-full mt-6">Add Expense</button>
+
+            </form>
+
+            <div id="messageBox" class="message-box"></div>
+
+        </div>
+
+
+
+        <!-- Date Range Filter -->
+
+        <div class="bg-yellow-50 p-6 rounded-lg shadow-inner mb-6">
+
+            <h2 class="text-2xl font-semibold mb-4">Filter Expenses by Date</h2>
+
+            <div class="flex flex-wrap gap-4">
+
+                <label class="inline-flex items-center">
+
+                    <input type="radio" name="dateFilter" value="all" checked class="form-radio h-5 w-5" onchange="filterExpenses()">
+
+                    <span class="ml-2">All Time</span>
+
+                </label>
+
+                <label class="inline-flex items-center">
+
+                    <input type="radio" name="dateFilter" value="15" class="form-radio h-5 w-5" onchange="filterExpenses()">
+
+                    <span class="ml-2">Last 15 Days</span>
+
+                </label>
+
+                <label class="inline-flex items-center">
+
+                    <input type="radio" name="dateFilter" value="30" class="form-radio h-5 w-5" onchange="filterExpenses()">
+
+                    <span class="ml-2">Last 30 Days</span>
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Sales Table -->
+
+        <div class="overflow-x-auto">
+
+            <table class="min-w-full rounded-lg shadow-md">
+
+                <thead>
+
+                    <tr>
+
+                        <th class="py-3 px-4 rounded-tl-lg">Name</th>
+
+                        <th class="py-3 px-4">Item</th>
+
+                        <th class="py-3 px-4">Quantity</th>
+
+                        <th class="py-3 px-4">Price per Unit (₹)</th>
+
+                        <th class="py-3 px-4">Date</th>
+
+                        <th class="py-3 px-4 rounded-tr-lg">Total Item Price (₹)</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="salesTableBody">
+
+                    <!-- Data rows will be inserted here by JavaScript -->
+
+                    <tr><td colspan="6" class="text-center py-4 text-gray-500">Loading expenses...</td></tr>
+
+                </tbody>
+
+                <tfoot>
+
+                    <tr class="total-row">
+
+                        <td colspan="5" class="py-3 px-4 text-right font-bold rounded-bl-lg">Grand Total Expenses:</td>
+
+                        <td id="grandTotal" class="py-3 px-4 font-bold rounded-br-lg">0.00</td>
+
+                    </tr>
+
+                </tfoot>
+
+            </table>
+
+        </div>
+
+
+
+        <!-- Expense Summary -->
+
+        <div class="bg-blue-50 p-6 rounded-lg shadow-inner mt-6">
+
+            <h2 class="text-2xl font-semibold mb-4">Expense Summary</h2>
+
+            <p class="text-lg mb-2">Total Expenses: <span id="totalExpensesSummary" class="font-bold text-xl">0.00</span> ₹</p>
+
+            <p class="text-lg">Amount per Person (for 4 people): <span id="amountPerPerson" class="font-bold text-xl">0.00</span> ₹</p>
+
+        </div>
+
+
+
+        <!-- Individual Expenses Summary -->
+
+        <div class="bg-green-50 p-6 rounded-lg shadow-inner mt-6">
+
+            <h2 class="text-2xl font-semibold mb-4">Individual Expenses Contributed</h2>
+
+            <ul class="list-disc list-inside text-lg">
+
+                <li>Ram: <span id="ramExpenses" class="font-bold">0.00</span> ₹</li>
+
+                <li>Shyam: <span id="shyamExpenses" class="font-bold">0.00</span> ₹</li>
+
+                <li>Rahul: <span id="rahulExpenses" class="font-bold">0.00</span> ₹</li>
+
+                <li>Sita: <span id="sitaExpenses" class="font-bold">0.00</span> ₹</li>
+
+            </ul>
+
+        </div>
+
+
+
+        <!-- Settlement Section -->
+
+        <div class="bg-purple-50 p-6 rounded-lg shadow-inner mt-6">
+
+            <h2 class="text-2xl font-semibold mb-4">Who Owes Whom?</h2>
+
+            <div id="settlementDetails">
+
+                <!-- Settlement details will be populated here -->
+
+                <p class="text-gray-600">Calculations will appear here after expenses are added.</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <script type="module">
+
+        // Firebase imports
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+
+
+        // Global variables provided by the Canvas environment
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+
+
+        // Firebase variables
+
+        let app;
+
+        let db;
+
+        let auth;
+
+        let currentUserId = null;
+
+        let allSalesData = []; // Store all fetched data to allow filtering
+
+
+
+        // DOM Elements
+
+        const salesTableBody = document.getElementById('salesTableBody');
+
+        const grandTotalElement = document.getElementById('grandTotal');
+
+        const totalExpensesSummaryElement = document.getElementById('totalExpensesSummary');
+
+        const amountPerPersonElement = document.getElementById('amountPerPerson');
+
+        const expenseForm = document.getElementById('expenseForm');
+
+        const nameInput = document.getElementById('name');
+
+        const itemInput = document.getElementById('item');
+
+        const quantityInput = document.getElementById('quantity');
+
+        const priceInput = document.getElementById('price');
+
+        const dateInput = document.getElementById('date');
+
+        const userIdDisplay = document.getElementById('userIdDisplay');
+
+        const messageBox = document.getElementById('messageBox');
+
+        const settlementDetailsElement = document.getElementById('settlementDetails');
+
+
+
+        // Individual expense display elements
+
+        const ramExpensesElement = document.getElementById('ramExpenses');
+
+        const shyamExpensesElement = document.getElementById('shyamExpenses');
+
+        const rahulExpensesElement = document.getElementById('rahulExpenses');
+
+        const sitaExpensesElement = document.getElementById('sitaExpenses');
+
+
+
+        // Fixed names for the dropdown
+
+        const fixedNames = ["Ram", "Shyam", "Rahul", "Sita"];
+
+        const numberOfPeople = fixedNames.length; // Will be 4
+
+
+
+        /**
+
+         * Displays a message in the message box.
+
+         * @param {string} message - The message to display.
+
+         * @param {string} type - The type of message (e.g., 'success', 'error', 'warning').
+
+         */
+
+        function showMessage(message, type = 'info') {
+
+            messageBox.textContent = message;
+
+            messageBox.className = 'message-box show'; // Reset classes
+
+            if (type === 'error') {
+
+                messageBox.style.backgroundColor = '#f8d7da';
+
+                messageBox.style.borderColor = '#f5c6cb';
+
+                messageBox.style.color = '#721c24';
+
+            } else if (type === 'success') {
+
+                messageBox.style.backgroundColor = '#d4edda';
+
+                messageBox.style.borderColor = '#c3e6cb';
+
+                messageBox.style.color = '#155724';
+
+            } else { // info or default
+
+                messageBox.style.backgroundColor = '#cfe2ff';
+
+                messageBox.style.borderColor = '#b6d4fe';
+
+                messageBox.style.color = '#052c65';
+
+            }
+
+            setTimeout(() => {
+
+                messageBox.classList.remove('show');
+
+            }, 5000); // Hide after 5 seconds
+
+        }
+
+
+
+        /**
+
+         * Initializes Firebase and sets up authentication.
+
+         */
+
+        async function initializeFirebase() {
+
+            try {
+
+                app = initializeApp(firebaseConfig);
+
+                db = getFirestore(app);
+
+                auth = getAuth(app);
+
+
+
+                // Listen for auth state changes
+
+                onAuthStateChanged(auth, async (user) => {
+
+                    if (user) {
+
+                        currentUserId = user.uid;
+
+                        userIdDisplay.textContent = currentUserId;
+
+                        console.log("User authenticated:", currentUserId);
+
+                        // Once authenticated, set up the real-time listener for sales data
+
+                        setupRealtimeListener();
+
+                    } else {
+
+                        // Sign in anonymously if no user is authenticated
+
+                        try {
+
+                            if (initialAuthToken) {
+
+                                await signInWithCustomToken(auth, initialAuthToken);
+
+                            } else {
+
+                                await signInAnonymously(auth);
+
+                            }
+
+                            console.log("Signed in anonymously or with custom token.");
+
+                        } catch (error) {
+
+                            console.error("Error during anonymous sign-in or custom token sign-in:", error);
+
+                            showMessage("Authentication failed. Please try again.", 'error');
+
+                        }
+
+                    }
+
+                });
+
+            } catch (error) {
+
+                console.error("Error initializing Firebase:", error);
+
+                showMessage("Failed to initialize the application. Check console for details.", 'error');
+
+            }
+
+        }
+
+
+
+        /**
+
+         * Sets up a real-time listener for sales data from Firestore.
+
+         */
+
+        function setupRealtimeListener() {
+
+            if (!db || !currentUserId) {
+
+                console.warn("Firestore or User ID not ready for listener setup.");
+
+                return;
+
+            }
+
+
+
+            // Define the collection path based on security rules (public data)
+
+            const salesCollectionRef = collection(db, `artifacts/${appId}/public/data/sales`);
+
+            const q = query(salesCollectionRef);
+
+
+
+            onSnapshot(q, (snapshot) => {
+
+                allSalesData = []; // Clear previous data
+
+                snapshot.forEach(doc => {
+
+                    allSalesData.push({ id: doc.id, ...doc.data() });
+
+                });
+
+                console.log("Real-time data update (all data):", allSalesData);
+
+                filterExpenses(); // Re-filter and populate table based on current filter
+
+            }, (error) => {
+
+                console.error("Error fetching real-time sales data:", error);
+
+                showMessage("Error loading sales data. Please refresh.", 'error');
+
+            });
+
+        }
+
+
+
+        /**
+
+         * Filters expenses based on the selected date range and then populates the table.
+
+         */
+
+        window.filterExpenses = function() {
+
+            const selectedFilter = document.querySelector('input[name="dateFilter"]:checked').value;
+
+            let filteredData = [...allSalesData]; // Create a copy to filter
+
+
+
+            if (selectedFilter !== 'all') {
+
+                const days = parseInt(selectedFilter);
+
+                const cutoffDate = new Date();
+
+                cutoffDate.setDate(cutoffDate.getDate() - days);
+
+                cutoffDate.setHours(0, 0, 0, 0); // Set to start of the day
+
+
+
+                filteredData = filteredData.filter(sale => {
+
+                    const saleDate = new Date(sale.date);
+
+                    return saleDate >= cutoffDate;
+
+                });
+
+            }
+
+            populateTable(filteredData);
+
+        }
+
+
+
+        /**
+
+         * Populates the table with sales data and calculates totals.
+
+         * @param {Array<Object>} data - The array of sales data objects (already filtered).
+
+         */
+
+        function populateTable(data) {
+
+            salesTableBody.innerHTML = ''; // Clear existing rows
+
+            let totalExpenses = 0;
+
+            let expensesPerPerson = { "Ram": 0, "Shyam": 0, "Rahul": 0, "Sita": 0 };
+
+
+
+            if (data.length === 0) {
+
+                salesTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">No expenses found for this period.</td></tr>';
+
+            } else {
+
+                // Sort data by date (client-side)
+
+                data.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+
+
+                data.forEach(sale => {
+
+                    const row = document.createElement('tr');
+
+                    const itemTotalPrice = sale.quantity * sale.price;
+
+                    totalExpenses += itemTotalPrice;
+
+
+
+                    // Accumulate expenses for each person
+
+                    if (expensesPerPerson.hasOwnProperty(sale.name)) {
+
+                        expensesPerPerson[sale.name] += itemTotalPrice;
+
+                    }
+
+
+
+                    row.innerHTML = `
+
+                        <td class="py-2 px-4 rounded-md">${sale.name}</td>
+
+                        <td class="py-2 px-4 rounded-md">${sale.item}</td>
+
+                        <td class="py-2 px-4 rounded-md">${sale.quantity}</td>
+
+                        <td class="py-2 px-4 rounded-md">${sale.price.toFixed(2)}</td>
+
+                        <td class="py-2 px-4 rounded-md">${sale.date}</td>
+
+                        <td class="py-2 px-4 rounded-md">${itemTotalPrice.toFixed(2)}</td>
+
+                    `;
+
+                    salesTableBody.appendChild(row);
+
+                });
+
+            }
+
+
+
+            // Update total expenses and amount per person
+
+            grandTotalElement.textContent = totalExpenses.toFixed(2);
+
+            totalExpensesSummaryElement.textContent = totalExpenses.toFixed(2);
+
+            const amountPerPerson = totalExpenses / numberOfPeople;
+
+            amountPerPersonElement.textContent = amountPerPerson.toFixed(2);
+
+
+
+            // Update individual expenses
+
+            ramExpensesElement.textContent = expensesPerPerson["Ram"].toFixed(2);
+
+            shyamExpensesElement.textContent = expensesPerPerson["Shyam"].toFixed(2);
+
+            rahulExpensesElement.textContent = expensesPerPerson["Rahul"].toFixed(2);
+
+            sitaExpensesElement.textContent = expensesPerPerson["Sita"].toFixed(2);
+
+
+
+            // Calculate and display settlement details
+
+            calculateSettlement(expensesPerPerson, amountPerPerson);
+
+        }
+
+
+
+        /**
+
+         * Calculates and displays who owes whom.
+
+         * @param {Object} expensesPerPerson - Object with total expenses for each person.
+
+         * @param {number} amountPerPerson - The average amount each person should pay.
+
+         */
+
+        function calculateSettlement(expensesPerPerson, amountPerPerson) {
+
+            settlementDetailsElement.innerHTML = ''; // Clear previous settlement details
+
+
+
+            if (amountPerPerson === 0) {
+
+                settlementDetailsElement.innerHTML = '<p class="text-gray-600">No expenses to settle yet.</p>';
+
+                return;
+
+            }
+
+
+
+            fixedNames.forEach(name => {
+
+                const balance = expensesPerPerson[name] - amountPerPerson;
+
+                const settlementItem = document.createElement('div');
+
+                settlementItem.classList.add('settlement-item');
+
+
+
+                if (balance < 0) {
+
+                    // Person owes money
+
+                    settlementItem.innerHTML = `
+
+                        <span>${name} needs to pay:</span>
+
+                        <span class="amount negative">₹ ${Math.abs(balance).toFixed(2)}</span>
+
+                    `;
+
+                } else if (balance > 0) {
+
+                    // Person is owed money
+
+                    settlementItem.innerHTML = `
+
+                        <span>${name} is owed:</span>
+
+                        <span class="amount positive">₹ ${balance.toFixed(2)}</span>
+
+                    `;
+
+                } else {
+
+                    // Balanced
+
+                    settlementItem.innerHTML = `
+
+                        <span>${name}:</span>
+
+                        <span class="amount">₹ 0.00 (Balanced)</span>
+
+                    `;
+
+                }
+
+                settlementDetailsElement.appendChild(settlementItem);
+
+            });
+
+        }
+
+
+
+
+
+        /**
+
+         * Handles the form submission to add a new expense.
+
+         * @param {Event} event - The form submission event.
+
+         */
+
+        async function addExpense(event) {
+
+            event.preventDefault(); // Prevent default form submission
+
+
+
+            const name = nameInput.value;
+
+            const item = itemInput.value.trim();
+
+            // Use parseFloat to handle decimal quantities
+
+            const quantity = parseFloat(quantityInput.value);
+
+            const price = parseFloat(priceInput.value);
+
+            const date = dateInput.value;
+
+
+
+            // Basic validation: Ensure quantity is a valid number and greater than 0
+
+            if (!name || !item || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0 || !date) {
+
+                showMessage("Please fill in all fields correctly, ensuring quantity and price are valid numbers greater than zero.", 'error');
+
+                return;
+
+            }
+
+
+
+            if (!db) {
+
+                showMessage("Database not initialized. Please wait or refresh.", 'error');
+
+                return;
+
+            }
+
+
+
+            const newExpense = {
+
+                name: name,
+
+                item: item,
+
+                quantity: quantity,
+
+                price: price,
+
+                date: date,
+
+                // Add a timestamp for potential future sorting/ordering if needed
+
+                timestamp: new Date().toISOString()
+
+            };
+
+
+
+            try {
+
+                // Add a new document to the 'sales' collection
+
+                const docRef = await addDoc(collection(db, `artifacts/${appId}/public/data/sales`), newExpense);
+
+                console.log("Document written with ID: ", docRef.id);
+
+                showMessage("Expense added successfully!", 'success');
+
+                expenseForm.reset(); // Clear form fields after successful submission
+
+                // Set default date to today's date after reset
+
+                dateInput.value = new Date().toISOString().slice(0, 10);
+
+            } catch (e) {
+
+                console.error("Error adding document: ", e);
+
+                showMessage("Error adding expense. Please try again.", 'error');
+
+            }
+
+        }
+
+
+
+        // Set today's date as default for the date input
+
+        dateInput.value = new Date().toISOString().slice(0, 10);
+
+
+
+        // Event listener for form submission
+
+        expenseForm.addEventListener('submit', addExpense);
+
+
+
+        // Initialize Firebase when the window loads
+
+        window.onload = initializeFirebase;
+
+    </script>
+
 </body>
+
 </html>
