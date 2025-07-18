@@ -387,31 +387,54 @@
          */
         async function initializeFirebase() {
             try {
+                if (Object.keys(firebaseConfig).length === 0) {
+                    throw new Error("Firebase configuration is missing or empty.");
+                }
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
 
-                onAuthStateChanged(auth, async (user) => {
+                // 1. Set up the listener to react to auth state changes.
+                onAuthStateChanged(auth, (user) => {
                     if (user) {
+                        // User is signed in.
                         currentUserId = user.uid;
                         userIdDisplay.textContent = currentUserId;
+                        userIdDisplay.classList.remove('text-red-500');
+                        console.log("User authenticated with UID:", currentUserId);
                         setupRealtimeListener();
                     } else {
-                        try {
-                            if (initialAuthToken) {
-                                await signInWithCustomToken(auth, initialAuthToken);
-                            } else {
-                                await signInAnonymously(auth);
-                            }
-                        } catch (error) {
-                            console.error("Authentication error:", error);
-                            showMessage("Authentication failed.", 'error');
-                        }
+                        // User is signed out.
+                        currentUserId = null;
+                        userIdDisplay.textContent = "Not Signed In";
+                        console.log("User is signed out.");
+                        populateTable([]); 
                     }
                 });
+
+                // 2. Attempt to sign in. The listener above will handle the result.
+                try {
+                    if (!auth.currentUser) {
+                         if (initialAuthToken) {
+                            console.log("Attempting sign in with custom token...");
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            console.log("Attempting anonymous sign in...");
+                            await signInAnonymously(auth);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Authentication error during sign-in attempt:", error);
+                    showMessage("Authentication failed. The app may not work correctly.", 'error');
+                    userIdDisplay.textContent = "Auth Failed";
+                    userIdDisplay.classList.add('text-red-500');
+                }
+
             } catch (error) {
                 console.error("Firebase initialization error:", error);
-                showMessage("Failed to initialize the application.", 'error');
+                showMessage("Failed to initialize the application. Check Firebase config.", 'error');
+                userIdDisplay.textContent = "Init Failed";
+                userIdDisplay.classList.add('text-red-500');
             }
         }
 
@@ -419,7 +442,10 @@
          * Sets up a real-time listener for sales data from Firestore.
          */
         function setupRealtimeListener() {
-            if (!db || !currentUserId) return;
+            if (!db || !currentUserId) {
+                console.warn("Firestore or User ID not ready for listener setup.");
+                return;
+            };
             const salesCollectionRef = collection(db, `artifacts/${appId}/public/data/sales`);
             const q = query(salesCollectionRef);
 
