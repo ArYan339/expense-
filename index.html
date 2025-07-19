@@ -6,6 +6,9 @@
     <title>Product Sales and Expense Tracker</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jsPDF and jsPDF-AutoTable for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         /* Custom styles for better aesthetics */
         body {
@@ -44,7 +47,7 @@
         table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 10px; /* Space between rows */
+            border-spacing: 0; /* Remove spacing for grouped layout */
             background-color: #ffffff; /* Solid white background for table */
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Lighter shadow */
             border-radius: 15px;
@@ -63,6 +66,14 @@
             color: #2d3748;
             text-transform: uppercase;
             font-size: 0.9em;
+        }
+        .group-header th {
+            background-color: #e2e8f0;
+            color: #1a202c;
+            font-size: 1.1em;
+            font-weight: 700;
+            padding: 10px 15px;
+            text-transform: none;
         }
         tr:last-child td {
             border-bottom: none;
@@ -86,6 +97,7 @@
         .bg-green-50 { background-color: #ecfdf5; }
         .bg-purple-50 { background-color: #f5f3ff; }
         .bg-indigo-50 { background-color: #eef2ff; }
+        .bg-pink-50 { background-color: #fdf2f8; }
 
 
         .p-6 { padding: 24px; } /* Consistent padding */
@@ -314,8 +326,7 @@
             <table class="min-w-full rounded-lg shadow-md">
                 <thead>
                     <tr>
-                        <th class="py-3 px-4 rounded-tl-lg">Name</th>
-                        <th class="py-3 px-4">Item</th>
+                        <th class="py-3 px-4 rounded-tl-lg">Item</th>
                         <th class="py-3 px-4">Quantity</th>
                         <th class="py-3 px-4">Price (₹)</th>
                         <th class="py-3 px-4">Date</th>
@@ -325,11 +336,11 @@
                 </thead>
                 <tbody id="salesTableBody">
                     <!-- Data rows will be inserted here by JavaScript -->
-                    <tr><td colspan="7" class="text-center py-4 text-gray-500">Loading expenses...</td></tr>
+                    <tr><td colspan="6" class="text-center py-4 text-gray-500">Loading expenses...</td></tr>
                 </tbody>
                 <tfoot>
                     <tr class="total-row">
-                        <td colspan="6" class="py-3 px-4 text-right font-bold rounded-bl-lg">Grand Total Expenses:</td>
+                        <td colspan="5" class="py-3 px-4 text-right font-bold rounded-bl-lg">Grand Total Expenses:</td>
                         <td id="grandTotal" class="py-3 px-4 font-bold rounded-br-lg">0.00</td>
                     </tr>
                 </tfoot>
@@ -363,9 +374,10 @@
                 <p class="text-gray-600">Calculations will appear here after expenses are added.</p>
             </div>
         </div>
-
-        <!-- Clear All Data Button -->
-        <div class="mt-6 text-center">
+        
+        <!-- Action Buttons -->
+        <div class="mt-8 flex justify-between items-center">
+            <button id="exportPdfBtn" class="btn btn-primary">Download as PDF</button>
             <button id="clearAllDataBtn" class="btn btn-danger">Clear All Expenses</button>
         </div>
     </div>
@@ -440,6 +452,7 @@
         let analytics;
         let currentUserId = null;
         let allSalesData = [];
+        let currentlyFilteredData = [];
 
         // DOM Elements
         const salesTableBody = document.getElementById('salesTableBody');
@@ -456,6 +469,7 @@
         const messageBox = document.getElementById('messageBox');
         const clearAllDataBtn = document.getElementById('clearAllDataBtn');
         const settlementDetailsElement = document.getElementById('settlementDetails');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
 
         // Quick Calculator DOM Elements
         const calcQuantityInput = document.getElementById('calcQuantity');
@@ -552,7 +566,7 @@
 
         window.filterExpenses = function() {
             const selectedFilter = document.querySelector('input[name="dateFilter"]:checked').value;
-            let filteredData = [...allSalesData];
+            currentlyFilteredData = [...allSalesData];
 
             if (selectedFilter !== 'all') {
                 const days = parseInt(selectedFilter);
@@ -560,62 +574,79 @@
                 cutoffDate.setDate(cutoffDate.getDate() - days);
                 cutoffDate.setHours(0, 0, 0, 0);
 
-                filteredData = filteredData.filter(sale => {
+                currentlyFilteredData = currentlyFilteredData.filter(sale => {
                     const saleDate = new Date(sale.date);
                     return saleDate >= cutoffDate;
                 });
             }
-            populateTable(filteredData);
+            populateTable(currentlyFilteredData);
         }
 
         function populateTable(data) {
             salesTableBody.innerHTML = '';
             let totalExpenses = 0;
             let expensesPerPerson = { "Ram Bachan": 0, "Bikash": 0, "Ramesh": 0, "Rajkishor": 0, "Raju": 0 };
+            
+            // Group expenses by name
+            const expensesByName = {};
+            data.forEach(sale => {
+                if (!expensesByName[sale.name]) {
+                    expensesByName[sale.name] = [];
+                }
+                expensesByName[sale.name].push(sale);
+                totalExpenses += sale.quantity * sale.price;
+                if (expensesPerPerson.hasOwnProperty(sale.name)) {
+                    expensesPerPerson[sale.name] += sale.quantity * sale.price;
+                }
+            });
+
 
             if (data.length === 0) {
-                salesTableBody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-gray-500">No expenses found for this period.</td></tr>';
+                salesTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">No expenses found for this period.</td></tr>';
             } else {
-                data.sort((a, b) => new Date(b.date) - new Date(a.date));
+                 fixedNames.forEach(name => {
+                    const userExpenses = expensesByName[name];
+                    if (userExpenses && userExpenses.length > 0) {
+                        // Add a group header row for the person
+                        const headerRow = document.createElement('tr');
+                        headerRow.className = 'group-header';
+                        headerRow.innerHTML = `<th colspan="6">${name}</th>`;
+                        salesTableBody.appendChild(headerRow);
 
-                data.forEach(sale => {
-                    const row = document.createElement('tr');
-                    const itemTotalPrice = sale.quantity * sale.price;
-                    totalExpenses += itemTotalPrice;
+                        // Sort and add expense rows for that person
+                        userExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+                        userExpenses.forEach(sale => {
+                             const row = document.createElement('tr');
+                             const itemTotalPrice = sale.quantity * sale.price;
+                             let actionButtons = '';
+                             if (sale.createdBy === currentUserId && !sale.edited) {
+                                 actionButtons = `
+                                     <button onclick="showEditModal('${sale.id}')" class="action-btn btn-edit mr-2">Edit</button>
+                                     <button onclick="deleteExpense('${sale.id}')" class="action-btn btn-delete">Delete</button>
+                                 `;
+                             } else if (sale.createdBy === currentUserId && sale.edited) {
+                                 actionButtons = `<span class="text-xs font-semibold text-gray-500">Locked</span>`;
+                             }
 
-                    if (expensesPerPerson.hasOwnProperty(sale.name)) {
-                        expensesPerPerson[sale.name] += itemTotalPrice;
+                             row.innerHTML = `
+                                 <td class="py-2 px-4">${sale.item}</td>
+                                 <td class="py-2 px-4">${sale.quantity}</td>
+                                 <td class="py-2 px-4">${sale.price.toFixed(2)}</td>
+                                 <td class="py-2 px-4">${sale.date}</td>
+                                 <td class="py-2 px-4 font-semibold">${itemTotalPrice.toFixed(2)}</td>
+                                 <td class="py-2 px-4">
+                                     ${actionButtons}
+                                 </td>
+                             `;
+                             salesTableBody.appendChild(row);
+                        });
                     }
-
-                    let actionButtons = '';
-                    if (sale.createdBy === currentUserId && !sale.edited) {
-                        actionButtons = `
-                            <button onclick="showEditModal('${sale.id}')" class="action-btn btn-edit mr-2">Edit</button>
-                            <button onclick="deleteExpense('${sale.id}')" class="action-btn btn-delete">Delete</button>
-                        `;
-                    } else if (sale.createdBy === currentUserId && sale.edited) {
-                        actionButtons = `<span class="text-xs font-semibold text-gray-500">Locked</span>`;
-                    }
-
-
-                    row.innerHTML = `
-                        <td class="py-2 px-4">${sale.name}</td>
-                        <td class="py-2 px-4">${sale.item}</td>
-                        <td class="py-2 px-4">${sale.quantity}</td>
-                        <td class="py-2 px-4">${sale.price.toFixed(2)}</td>
-                        <td class="py-2 px-4">${sale.date}</td>
-                        <td class="py-2 px-4 font-semibold">${itemTotalPrice.toFixed(2)}</td>
-                        <td class="py-2 px-4">
-                            ${actionButtons}
-                        </td>
-                    `;
-                    salesTableBody.appendChild(row);
                 });
             }
 
             grandTotalElement.textContent = totalExpenses.toFixed(2);
             totalExpensesSummaryElement.textContent = totalExpenses.toFixed(2);
-            const amountPerPerson = totalExpenses / numberOfPeople;
+            const amountPerPerson = totalExpenses > 0 ? totalExpenses / numberOfPeople : 0;
             amountPerPersonElement.textContent = amountPerPerson.toFixed(2);
 
             ramExpensesElement.textContent = expensesPerPerson["Ram Bachan"].toFixed(2);
@@ -840,6 +871,53 @@
                 calcQuantityInput.value = (total / unitPrice).toFixed(2);
             }
         }
+        
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const selectedFilter = document.querySelector('input[name="dateFilter"]:checked').value;
+            let reportTitle = 'Expense Report';
+            if(selectedFilter !== 'all'){
+                reportTitle += ` (Last ${selectedFilter} Days)`;
+            } else {
+                reportTitle += ' (All Time)';
+            }
+            
+            doc.text(reportTitle, 14, 16);
+            doc.setFontSize(12);
+            doc.text(`Report Generated: ${new Date().toLocaleDateString()}`, 14, 22);
+            doc.text(`Total Expenses: ${grandTotalElement.textContent} INR`, 14, 28);
+
+            const tableData = currentlyFilteredData
+                .sort((a, b) => {
+                    if (a.name < b.name) return -1;
+                    if (a.name > b.name) return 1;
+                    return new Date(b.date) - new Date(a.date);
+                })
+                .map(sale => [
+                    sale.name,
+                    sale.item,
+                    sale.quantity,
+                    sale.price.toFixed(2),
+                    sale.date,
+                    (sale.quantity * sale.price).toFixed(2)
+                ]);
+
+            doc.autoTable({
+                head: [['Name', 'Item', 'Quantity', 'Price (₹)', 'Date', 'Total (₹)']],
+                body: tableData,
+                startY: 35,
+                theme: 'grid',
+                headStyles: { 
+                    fillColor: [237, 242, 247],
+                    textColor: [0, 0, 0] 
+                },
+            });
+
+            doc.save('Expense_Report.pdf');
+        }
+
 
         async function clearAllData() {
             if (!db) {
@@ -911,6 +989,7 @@
         // Event listeners
         expenseForm.addEventListener('submit', addExpense);
         clearAllDataBtn.addEventListener('click', clearAllData);
+        exportPdfBtn.addEventListener('click', exportToPDF);
         document.getElementById('editExpenseForm').addEventListener('submit', updateExpense);
         document.getElementById('cancelEditBtn').addEventListener('click', () => {
             document.getElementById('editModal').classList.add('hidden');
