@@ -55,6 +55,7 @@
             text-align: left;
             border-bottom: 1px solid #e2e8f0; /* Light gray border */
             color: #2d3748; /* Darker text for table content */
+            vertical-align: middle;
         }
         th {
             background-color: #edf2f7; /* Lighter blue-gray for header */
@@ -84,6 +85,8 @@
         .bg-blue-50 { background-color: #eff6ff; }
         .bg-green-50 { background-color: #ecfdf5; }
         .bg-purple-50 { background-color: #f5f3ff; }
+        .bg-indigo-50 { background-color: #eef2ff; }
+
 
         .p-6 { padding: 24px; } /* Consistent padding */
         .rounded-lg { border-radius: 12px; } /* Consistent border-radius */
@@ -107,37 +110,50 @@
             border-color: #4299e1;
             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
         }
+        .btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn:hover {
+             transform: translateY(-2px);
+        }
         .btn-primary {
             background-color: #4299e1;
             color: white;
             padding: 12px 20px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
             font-size: 1.1em;
-            font-weight: 600;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Lighter button shadow */
         }
         .btn-primary:hover {
             background-color: #3182ce;
-            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #059669;
         }
         .btn-danger { /* New style for danger button */
             background-color: #ef4444; /* Red color */
             color: white;
             padding: 12px 20px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
             font-size: 1.1em;
-            font-weight: 600;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         .btn-danger:hover {
             background-color: #dc2626;
-            transform: translateY(-2px);
         }
         .message-box {
             background-color: #fff3cd;
@@ -183,12 +199,36 @@
         .form-radio {
             accent-color: #4299e1; /* Keep custom color for radio buttons */
         }
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+        .btn-edit {
+            background-color: #3b82f6;
+        }
+        .btn-edit:hover {
+            background-color: #2563eb;
+        }
+        .btn-delete {
+            background-color: #ef4444;
+        }
+        .btn-delete:hover {
+            background-color: #dc2626;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-3xl font-bold text-center mb-4">Product  Expense Tracker</h1>
-        <p class="text-center mb-6">User ID: <span id="userIdDisplay" class="font-mono text-sm bg-gray-100 px-2 py-1 rounded-md text-gray-800">Loading...</span></p>
+        <h1 class="text-3xl font-bold text-center mb-4">Product Expense Tracker</h1>
+        <p class="text-center mb-6">Your User ID: <span id="userIdDisplay" class="font-mono text-sm bg-gray-100 px-2 py-1 rounded-md text-gray-800">Loading...</span></p>
 
         <!-- Input Form -->
         <div class="bg-gray-50 p-6 rounded-lg shadow-inner mb-6">
@@ -197,34 +237,59 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="form-group">
                         <label for="name">Name:</label>
-                        <select id="name" class="rounded-md">
+                        <select id="name" class="w-full p-2 border border-gray-300 rounded-md">
                             <option value="Ram Bachan">Ram Bachan</option>
                             <option value="Bikash">Bikash</option>
                             <option value="Ramesh">Ramesh</option>
                             <option value="Rajkishor">Rajkishor</option>
+                            <option value="Raju">Raju</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="item">Item:</label>
-                        <input type="text" id="item" placeholder="e.g., Apple" required class="rounded-md">
+                        <input type="text" id="item" placeholder="e.g., Apple" required class="w-full p-2 border border-gray-300 rounded-md">
                     </div>
                     <div class="form-group">
                         <label for="quantity">Quantity:</label>
-                        <input type="number" id="quantity" min="0" step="0.01" value="1" required class="rounded-md">
+                        <input type="number" id="quantity" min="0" step="0.01" value="1" required class="w-full p-2 border border-gray-300 rounded-md">
                     </div>
                     <div class="form-group">
                         <label for="price">Price per Unit (₹):</label>
-                        <input type="number" id="price" min="0.01" step="0.01" required class="rounded-md">
+                        <input type="number" id="price" min="0.01" step="0.01" required class="w-full p-2 border border-gray-300 rounded-md">
                     </div>
                     <div class="form-group md:col-span-2">
                         <label for="date">Date:</label>
-                        <input type="date" id="date" required class="rounded-md">
+                        <input type="date" id="date" required class="w-full p-2 border border-gray-300 rounded-md">
                     </div>
                 </div>
-                <button type="submit" class="btn-primary w-full mt-6">Add Expense</button>
+                <button type="submit" class="btn btn-primary w-full mt-6">Add Expense</button>
             </form>
             <div id="messageBox" class="message-box"></div>
         </div>
+        
+        <!-- Quick Calculator -->
+        <div class="bg-indigo-50 p-6 rounded-lg shadow-inner mb-6">
+            <h2 class="text-2xl font-semibold mb-5">Quick Calculator</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="form-group">
+                    <label for="calcQuantity">Quantity:</label>
+                    <input type="number" id="calcQuantity" placeholder="e.g., 2.5" class="w-full p-2 border border-gray-300 rounded-md">
+                </div>
+                <div class="form-group">
+                    <label for="calcTotalPrice">Total Price (₹):</label>
+                    <input type="number" id="calcTotalPrice" placeholder="e.g., 130" class="w-full p-2 border border-gray-300 rounded-md">
+                </div>
+                <div class="form-group">
+                    <label for="calcPricePerUnit">Price / Unit (₹):</label>
+                    <input type="number" id="calcPricePerUnit" placeholder="e.g., 52.00" class="w-full p-2 border border-gray-300 rounded-md bg-gray-200" readonly>
+                </div>
+            </div>
+            <div class="flex justify-end gap-4 mt-4">
+                 <button id="useCalcValuesBtn" class="btn btn-success">Use Values</button>
+                 <button id="clearCalcBtn" class="btn btn-secondary">Clear</button>
+            </div>
+        </div>
+
 
         <!-- Date Range Filter -->
         <div class="bg-yellow-50 p-6 rounded-lg shadow-inner mb-6">
@@ -253,18 +318,19 @@
                         <th class="py-3 px-4 rounded-tl-lg">Name</th>
                         <th class="py-3 px-4">Item</th>
                         <th class="py-3 px-4">Quantity</th>
-                        <th class="py-3 px-4">Price per Unit (₹)</th>
+                        <th class="py-3 px-4">Price (₹)</th>
                         <th class="py-3 px-4">Date</th>
-                        <th class="py-3 px-4 rounded-tr-lg">Total Item Price (₹)</th>
+                        <th class="py-3 px-4">Total (₹)</th>
+                        <th class="py-3 px-4 rounded-tr-lg">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="salesTableBody">
                     <!-- Data rows will be inserted here by JavaScript -->
-                    <tr><td colspan="6" class="text-center py-4 text-gray-500">Loading expenses...</td></tr>
+                    <tr><td colspan="7" class="text-center py-4 text-gray-500">Loading expenses...</td></tr>
                 </tbody>
                 <tfoot>
                     <tr class="total-row">
-                        <td colspan="5" class="py-3 px-4 text-right font-bold rounded-bl-lg">Grand Total Expenses:</td>
+                        <td colspan="6" class="py-3 px-4 text-right font-bold rounded-bl-lg">Grand Total Expenses:</td>
                         <td id="grandTotal" class="py-3 px-4 font-bold rounded-br-lg">0.00</td>
                     </tr>
                 </tfoot>
@@ -275,7 +341,7 @@
         <div class="bg-blue-50 p-6 rounded-lg shadow-inner mt-6">
             <h2 class="text-2xl font-semibold mb-4">Expense Summary</h2>
             <p class="text-lg mb-2">Total Expenses: <span id="totalExpensesSummary" class="font-bold text-xl">0.00</span> ₹</p>
-            <p class="text-lg">Amount per Person (for 4 people): <span id="amountPerPerson" class="font-bold text-xl">0.00</span> ₹</p>
+            <p class="text-lg">Amount per Person (for 5 people): <span id="amountPerPerson" class="font-bold text-xl">0.00</span> ₹</p>
         </div>
 
         <!-- Individual Expenses Summary -->
@@ -286,6 +352,7 @@
                 <li>Bikash: <span id="shyamExpenses" class="font-bold">0.00</span> ₹</li>
                 <li>Ramesh: <span id="rahulExpenses" class="font-bold">0.00</span> ₹</li>
                 <li>Rajkishor: <span id="sitaExpenses" class="font-bold">0.00</span> ₹</li>
+                <li>Raju: <span id="rajuExpenses" class="font-bold">0.00</span> ₹</li>
             </ul>
         </div>
 
@@ -300,16 +367,59 @@
 
         <!-- Clear All Data Button -->
         <div class="mt-6 text-center">
-            <button id="clearAllDataBtn" class="btn-danger">Clear All Expenses</button>
+            <button id="clearAllDataBtn" class="btn btn-danger">Clear All Expenses</button>
         </div>
     </div>
+
+    <!-- Edit Expense Modal -->
+    <div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden">
+        <div class="bg-white p-8 rounded-lg shadow-xl max-w-lg mx-auto w-full">
+            <h2 class="text-2xl font-semibold mb-5 text-gray-800">Edit Expense</h2>
+            <form id="editExpenseForm">
+                <input type="hidden" id="editExpenseId">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="editName" class="text-gray-600">Name:</label>
+                        <select id="editName" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="Ram Bachan">Ram Bachan</option>
+                            <option value="Bikash">Bikash</option>
+                            <option value="Ramesh">Ramesh</option>
+                            <option value="Rajkishor">Rajkishor</option>
+                            <option value="Raju">Raju</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editItem" class="text-gray-600">Item:</label>
+                        <input type="text" id="editItem" required class="w-full p-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div class="form-group">
+                        <label for="editQuantity" class="text-gray-600">Quantity:</label>
+                        <input type="number" id="editQuantity" min="0" step="0.01" required class="w-full p-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div class="form-group">
+                        <label for="editPrice" class="text-gray-600">Price per Unit (₹):</label>
+                        <input type="number" id="editPrice" min="0.01" step="0.01" required class="w-full p-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label for="editDate" class="text-gray-600">Date:</label>
+                        <input type="date" id="editDate" required class="w-full p-2 border border-gray-300 rounded-md">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-4 mt-6">
+                    <button type="button" id="cancelEditBtn" class="px-6 py-2 rounded-md bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition">Cancel</button>
+                    <button type="submit" class="px-6 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <script type="module">
         // Firebase imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js"; // Import getAnalytics
+        import { getFirestore, collection, addDoc, onSnapshot, query, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
 
         // Use the user-provided Firebase configuration directly
         const firebaseConfig = {
@@ -345,27 +455,30 @@
         const dateInput = document.getElementById('date');
         const userIdDisplay = document.getElementById('userIdDisplay');
         const messageBox = document.getElementById('messageBox');
-        const clearAllDataBtn = document.getElementById('clearAllDataBtn'); // New button element
+        const clearAllDataBtn = document.getElementById('clearAllDataBtn');
         const settlementDetailsElement = document.getElementById('settlementDetails');
+
+        // Quick Calculator DOM Elements
+        const calcQuantityInput = document.getElementById('calcQuantity');
+        const calcTotalPriceInput = document.getElementById('calcTotalPrice');
+        const calcPricePerUnitInput = document.getElementById('calcPricePerUnit');
+        const useCalcValuesBtn = document.getElementById('useCalcValuesBtn');
+        const clearCalcBtn = document.getElementById('clearCalcBtn');
+
 
         // Individual expense display elements
         const ramExpensesElement = document.getElementById('ramExpenses');
         const shyamExpensesElement = document.getElementById('shyamExpenses');
         const rahulExpensesElement = document.getElementById('rahulExpenses');
         const sitaExpensesElement = document.getElementById('sitaExpenses');
+        const rajuExpensesElement = document.getElementById('rajuExpenses');
 
         // Fixed names for the dropdown
-        const fixedNames = ["Ram Bachan", "Bikash", "Ramesh", "Rajkishor"];
+        const fixedNames = ["Ram Bachan", "Bikash", "Ramesh", "Rajkishor", "Raju"];
         const numberOfPeople = fixedNames.length;
 
-        // Hardcoded password for clearing data (for demonstration purposes only)
         const ADMIN_PASSWORD = "admin123";
 
-        /**
-         * Displays a message in the message box.
-         * @param {string} message - The message to display.
-         * @param {string} type - The type of message (e.g., 'success', 'error', 'warning').
-         */
         function showMessage(message, type = 'info') {
             messageBox.textContent = message;
             messageBox.className = 'message-box show';
@@ -387,9 +500,6 @@
             }, 5000);
         }
 
-        /**
-         * Initializes Firebase and sets up authentication.
-         */
         async function initializeFirebase() {
             try {
                 app = initializeApp(firebaseConfig);
@@ -419,9 +529,6 @@
             }
         }
 
-        /**
-         * Sets up a real-time listener for sales data from Firestore.
-         */
         function setupRealtimeListener() {
             if (!db || !currentUserId) {
                 console.warn("Firestore or User ID not ready for listener setup.");
@@ -444,9 +551,6 @@
             });
         }
 
-        /**
-         * Filters expenses based on the selected date range and then populates the table.
-         */
         window.filterExpenses = function() {
             const selectedFilter = document.querySelector('input[name="dateFilter"]:checked').value;
             let filteredData = [...allSalesData];
@@ -465,19 +569,15 @@
             populateTable(filteredData);
         }
 
-        /**
-         * Populates the table with sales data and calculates totals.
-         * @param {Array<Object>} data - The array of sales data objects (already filtered).
-         */
         function populateTable(data) {
             salesTableBody.innerHTML = '';
             let totalExpenses = 0;
-            let expensesPerPerson = { "Ram Bachan": 0, "Bikash": 0, "Ramesh": 0, "Rajkishor": 0 };
+            let expensesPerPerson = { "Ram Bachan": 0, "Bikash": 0, "Ramesh": 0, "Rajkishor": 0, "Raju": 0 };
 
             if (data.length === 0) {
-                salesTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">No expenses found for this period.</td></tr>';
+                salesTableBody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-gray-500">No expenses found for this period.</td></tr>';
             } else {
-                data.sort((a, b) => new Date(a.date) - new Date(b.date));
+                data.sort((a, b) => new Date(b.date) - new Date(a.date));
 
                 data.forEach(sale => {
                     const row = document.createElement('tr');
@@ -488,13 +588,27 @@
                         expensesPerPerson[sale.name] += itemTotalPrice;
                     }
 
+                    let actionButtons = '';
+                    if (sale.createdBy === currentUserId && !sale.edited) {
+                        actionButtons = `
+                            <button onclick="showEditModal('${sale.id}')" class="action-btn btn-edit mr-2">Edit</button>
+                            <button onclick="deleteExpense('${sale.id}')" class="action-btn btn-delete">Delete</button>
+                        `;
+                    } else if (sale.createdBy === currentUserId && sale.edited) {
+                        actionButtons = `<span class="text-xs font-semibold text-gray-500">Locked</span>`;
+                    }
+
+
                     row.innerHTML = `
-                        <td class="py-2 px-4 rounded-md">${sale.name}</td>
-                        <td class="py-2 px-4 rounded-md">${sale.item}</td>
-                        <td class="py-2 px-4 rounded-md">${sale.quantity}</td>
-                        <td class="py-2 px-4 rounded-md">${sale.price.toFixed(2)}</td>
-                        <td class="py-2 px-4 rounded-md">${sale.date}</td>
-                        <td class="py-2 px-4 rounded-md">${itemTotalPrice.toFixed(2)}</td>
+                        <td class="py-2 px-4">${sale.name}</td>
+                        <td class="py-2 px-4">${sale.item}</td>
+                        <td class="py-2 px-4">${sale.quantity}</td>
+                        <td class="py-2 px-4">${sale.price.toFixed(2)}</td>
+                        <td class="py-2 px-4">${sale.date}</td>
+                        <td class="py-2 px-4 font-semibold">${itemTotalPrice.toFixed(2)}</td>
+                        <td class="py-2 px-4">
+                            ${actionButtons}
+                        </td>
                     `;
                     salesTableBody.appendChild(row);
                 });
@@ -509,15 +623,11 @@
             shyamExpensesElement.textContent = expensesPerPerson["Bikash"].toFixed(2);
             rahulExpensesElement.textContent = expensesPerPerson["Ramesh"].toFixed(2);
             sitaExpensesElement.textContent = expensesPerPerson["Rajkishor"].toFixed(2);
+            rajuExpensesElement.textContent = expensesPerPerson["Raju"].toFixed(2);
 
             calculateSettlement(expensesPerPerson, amountPerPerson);
         }
 
-        /**
-         * Calculates and displays who owes whom.
-         * @param {Object} expensesPerPerson - Object with total expenses for each person.
-         * @param {number} amountPerPerson - The average amount each person should pay.
-         */
         function calculateSettlement(expensesPerPerson, amountPerPerson) {
             settlementDetailsElement.innerHTML = '';
 
@@ -529,32 +639,28 @@
             fixedNames.forEach(name => {
                 const balance = expensesPerPerson[name] - amountPerPerson;
                 const settlementItem = document.createElement('div');
-                settlementItem.classList.add('settlement-item');
+                settlementItem.classList.add('settlement-item', 'flex', 'justify-between', 'py-2');
 
                 if (balance < 0) {
                     settlementItem.innerHTML = `
                         <span>${name} needs to pay:</span>
-                        <span class="amount negative">₹ ${Math.abs(balance).toFixed(2)}</span>
+                        <span class="amount negative font-semibold">₹ ${Math.abs(balance).toFixed(2)}</span>
                     `;
                 } else if (balance > 0) {
                     settlementItem.innerHTML = `
                         <span>${name} is owed:</span>
-                        <span class="amount positive">₹ ${balance.toFixed(2)}</span>
+                        <span class="amount positive font-semibold">₹ ${balance.toFixed(2)}</span>
                     `;
                 } else {
                     settlementItem.innerHTML = `
                         <span>${name}:</span>
-                        <span class="amount">₹ 0.00 (Balanced)</span>
+                        <span class="amount font-semibold">₹ 0.00 (Balanced)</span>
                     `;
                 }
                 settlementDetailsElement.appendChild(settlementItem);
             });
         }
 
-        /**
-         * Handles the form submission to add a new expense.
-         * @param {Event} event - The form submission event.
-         */
         async function addExpense(event) {
             event.preventDefault();
 
@@ -569,8 +675,8 @@
                 return;
             }
 
-            if (!db) {
-                showMessage("Database not initialized. Please wait or refresh.", 'error');
+            if (!db || !currentUserId) {
+                showMessage("Database not initialized or user not authenticated. Please wait or refresh.", 'error');
                 return;
             }
 
@@ -580,7 +686,9 @@
                 quantity: quantity,
                 price: price,
                 date: date,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                createdBy: currentUserId,
+                edited: false 
             };
 
             try {
@@ -595,19 +703,154 @@
             }
         }
 
+        window.deleteExpense = async function(expenseId) {
+            const expense = allSalesData.find(sale => sale.id === expenseId);
+            if (!expense || expense.createdBy !== currentUserId) {
+                showMessage("You are not authorized to delete this expense.", 'error');
+                return;
+            }
+            if (expense.edited) {
+                showMessage("This expense has been edited and cannot be deleted.", 'error');
+                return;
+            }
+
+            const confirmed = await new Promise(resolve => {
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50';
+                modal.innerHTML = `
+                    <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm mx-auto text-center">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Confirm Deletion</h3>
+                        <p class="text-gray-600 mb-6">Are you sure you want to delete this expense? This action cannot be undone.</p>
+                        <div class="flex justify-center space-x-4">
+                            <button class="cancel-btn px-6 py-2 rounded-md bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition">Cancel</button>
+                            <button class="confirm-btn px-6 py-2 rounded-md bg-red-600 text-white font-semibold hover:bg-red-700 transition">Delete</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                modal.querySelector('.cancel-btn').onclick = () => {
+                    document.body.removeChild(modal);
+                    resolve(false);
+                };
+                modal.querySelector('.confirm-btn').onclick = () => {
+                    document.body.removeChild(modal);
+                    resolve(true);
+                };
+            });
+
+            if (confirmed) {
+                try {
+                    await deleteDoc(doc(db, "expenses", expenseId));
+                    showMessage("Expense deleted successfully!", 'success');
+                } catch (error) {
+                    console.error("Error deleting document: ", error);
+                    showMessage("Error deleting expense. Please try again.", 'error');
+                }
+            }
+        }
+
+        window.showEditModal = function(expenseId) {
+            const expense = allSalesData.find(sale => sale.id === expenseId);
+            if (!expense) {
+                showMessage("Could not find the expense to edit.", 'error');
+                return;
+            }
+             if (expense.createdBy !== currentUserId) {
+                showMessage("You are not authorized to edit this expense.", 'error');
+                return;
+            }
+            if (expense.edited) {
+                showMessage("This expense has already been edited and is now locked.", 'error');
+                return;
+            }
+
+            document.getElementById('editExpenseId').value = expense.id;
+            document.getElementById('editName').value = expense.name;
+            document.getElementById('editItem').value = expense.item;
+            document.getElementById('editQuantity').value = expense.quantity;
+            document.getElementById('editPrice').value = expense.price;
+            document.getElementById('editDate').value = expense.date;
+
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        async function updateExpense(event) {
+            event.preventDefault();
+
+            const expenseId = document.getElementById('editExpenseId').value;
+             const expense = allSalesData.find(sale => sale.id === expenseId);
+            if (!expense || expense.createdBy !== currentUserId) {
+                showMessage("You are not authorized to update this expense.", 'error');
+                document.getElementById('editModal').classList.add('hidden');
+                return;
+            }
+            if (expense.edited) {
+                showMessage("This expense has already been edited and cannot be updated.", 'error');
+                document.getElementById('editModal').classList.add('hidden');
+                return;
+            }
+
+            const updatedData = {
+                name: document.getElementById('editName').value,
+                item: document.getElementById('editItem').value.trim(),
+                quantity: parseFloat(document.getElementById('editQuantity').value),
+                price: parseFloat(document.getElementById('editPrice').value),
+                date: document.getElementById('editDate').value,
+                edited: true
+            };
+
+            if (!updatedData.name || !updatedData.item || isNaN(updatedData.quantity) || updatedData.quantity <= 0 || isNaN(updatedData.price) || updatedData.price <= 0 || !updatedData.date) {
+                showMessage("Please fill in all fields correctly in the edit form.", 'error');
+                return;
+            }
+
+            try {
+                const expenseRef = doc(db, "expenses", expenseId);
+                await updateDoc(expenseRef, updatedData);
+                showMessage("Expense updated successfully and is now locked!", 'success');
+                document.getElementById('editModal').classList.add('hidden');
+            } catch (error) {
+                console.error("Error updating document: ", error);
+                showMessage("Error updating expense. Please try again.", 'error');
+            }
+        }
+        
         /**
-         * Clears all data from the 'expenses' collection in Firestore, with password protection.
+         * Handles the logic for the Quick Calculator.
+         * Calculates the third field when two fields are filled.
          */
+        function handleCalculation() {
+            const qty = parseFloat(calcQuantityInput.value);
+            const total = parseFloat(calcTotalPriceInput.value);
+            const unitPrice = parseFloat(calcPricePerUnitInput.value);
+
+            // Determine which input was just changed to avoid overwriting it
+            const activeElementId = document.activeElement.id;
+
+            // Case 1: Calculate Price/Unit
+            if (qty > 0 && total > 0 && activeElementId !== 'calcPricePerUnit') {
+                calcPricePerUnitInput.value = (total / qty).toFixed(2);
+            } 
+            // Case 2: Calculate Total Price
+            else if (qty > 0 && unitPrice > 0 && activeElementId !== 'calcTotalPrice') {
+                calcTotalPriceInput.value = (qty * unitPrice).toFixed(2);
+            } 
+            // Case 3: Calculate Quantity
+            else if (total > 0 && unitPrice > 0 && activeElementId !== 'calcQuantity') {
+                calcQuantityInput.value = (total / unitPrice).toFixed(2);
+            }
+        }
+
         async function clearAllData() {
             if (!db) {
                 showMessage("Database not initialized. Please wait or refresh.", 'error');
                 return;
             }
 
-            // Custom confirmation message box with password input
             const passwordEntered = await new Promise(resolve => {
                 const modal = document.createElement('div');
-                modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center';
+                modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50';
                 modal.innerHTML = `
                     <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm mx-auto text-center">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Confirm Deletion</h3>
@@ -627,22 +870,22 @@
 
                 document.getElementById('cancelClearBtn').onclick = () => {
                     document.body.removeChild(modal);
-                    resolve(null); // Resolve with null if cancelled
+                    resolve(null);
                 };
                 document.getElementById('confirmClearBtn').onclick = () => {
                     if (passwordInput.value === ADMIN_PASSWORD) {
                         document.body.removeChild(modal);
-                        resolve(passwordInput.value); // Resolve with the password if correct
+                        resolve(passwordInput.value);
                     } else {
                         passwordError.classList.remove('hidden');
-                        passwordInput.value = ''; // Clear password input
+                        passwordInput.value = '';
                     }
                 };
-                passwordInput.focus(); // Focus on the password input
+                passwordInput.focus();
             });
 
 
-            if (passwordEntered === ADMIN_PASSWORD) { // Check if the correct password was returned
+            if (passwordEntered === ADMIN_PASSWORD) {
                 try {
                     const q = query(collection(db, `expenses`));
                     const querySnapshot = await getDocs(q);
@@ -658,10 +901,9 @@
                     console.error("Error clearing documents: ", e);
                     showMessage("Error clearing expenses. Please try again. Check your Firestore security rules for delete access.", 'error');
                 }
-            } else if (passwordEntered !== null) { // If not null, it means an incorrect password was entered
+            } else if (passwordEntered !== null) {
                 showMessage("Incorrect password. Data not cleared.", 'error');
             }
-            // If passwordEntered is null, it means the modal was cancelled, no message needed.
         }
 
         // Set today's date as default for the date input
@@ -669,7 +911,43 @@
 
         // Event listeners
         expenseForm.addEventListener('submit', addExpense);
-        clearAllDataBtn.addEventListener('click', clearAllData); // Attach event listener to the new button
+        clearAllDataBtn.addEventListener('click', clearAllData);
+        document.getElementById('editExpenseForm').addEventListener('submit', updateExpense);
+        document.getElementById('cancelEditBtn').addEventListener('click', () => {
+            document.getElementById('editModal').classList.add('hidden');
+        });
+
+        // Quick Calculator Event Listeners
+        [calcQuantityInput, calcTotalPriceInput, calcPricePerUnitInput].forEach(input => {
+            // Make all calculator inputs editable
+            if(input.id !== 'calcPricePerUnit') {
+                 input.addEventListener('input', handleCalculation);
+            } else {
+                // Price per unit is calculated, but let's allow editing it too
+                input.readOnly = false;
+                input.classList.remove('bg-gray-200');
+                input.addEventListener('input', handleCalculation);
+            }
+        });
+
+        clearCalcBtn.addEventListener('click', () => {
+            calcQuantityInput.value = '';
+            calcTotalPriceInput.value = '';
+            calcPricePerUnitInput.value = '';
+        });
+
+        useCalcValuesBtn.addEventListener('click', () => {
+            const qty = calcQuantityInput.value;
+            const price = calcPricePerUnitInput.value;
+            if (qty > 0 && price > 0) {
+                quantityInput.value = qty;
+                priceInput.value = price;
+                showMessage('Values copied to the expense form!', 'success');
+            } else {
+                showMessage('Please calculate valid quantity and price first.', 'warning');
+            }
+        });
+
 
         // Initialize Firebase when the window loads
         window.onload = initializeFirebase;
